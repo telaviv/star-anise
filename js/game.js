@@ -1,6 +1,6 @@
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
-    Crafty.scene('StartScene');
+    Crafty.scene('FightScene');
 };
 
 Crafty.scene('StartScene', function() {
@@ -8,7 +8,7 @@ Crafty.scene('StartScene', function() {
 });
 
 Crafty.scene('FightScene', function() {
-    Crafty.background('white');
+    Crafty.e('Deck');
 });
 
 Crafty.c('StartScreen', {
@@ -20,6 +20,14 @@ Crafty.c('StartScreen', {
         this.bind('MouseUp', function() {
             Crafty.scene('FightScene');
         });
+    }
+});
+
+Crafty.c('Deck', {
+    init: function() {
+        this.requires('2D, Canvas, Color');
+        this.attr({x: 0, y: 0, w: 180, h: 180});
+        this.color('green');
     }
 });
 
