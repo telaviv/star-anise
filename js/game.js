@@ -1,4 +1,5 @@
 var BOTTOM_ROW = 600;
+var DECK_POSITION = {x: 1000, y: BOTTOM_ROW};
 
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
@@ -27,19 +28,26 @@ Crafty.c('StartScreen', {
 
 Crafty.c('Player Side', {
     init: function() {
-        this.card = Crafty.e('Card');
+        this._setupCard();
         Crafty.e('Slot').create(100, BOTTOM_ROW);
         Crafty.e('Slot').create(400, BOTTOM_ROW);
         Crafty.e('Slot').create(700, BOTTOM_ROW);
+    },
+
+    _setupCard: function() {
+        var card = Crafty.e('Card');
+        card.bind('StopDrag', function() {
+            card.attr(DECK_POSITION);
+        });
     }
 });
 
 Crafty.c('Card', {
     init: function() {
         this.requires('2D, Canvas, Color, Draggable');
-        this.attr({x: 1000, y: BOTTOM_ROW, w: 180, h: 180, z: 1});
+        this.attr({x: DECK_POSITION.x, y: DECK_POSITION.y, w: 180, h: 180, z: 1});
         this.color('green');
-    }
+    },
 });
 
 Crafty.c('Slot', {
