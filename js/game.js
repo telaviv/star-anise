@@ -28,16 +28,14 @@ Crafty.c('StartScreen', {
 
 Crafty.c('Player Side', {
     init: function() {
-        this._setupCard();
-        Crafty.e('Slot').create(100, BOTTOM_ROW);
-        Crafty.e('Slot').create(400, BOTTOM_ROW);
-        Crafty.e('Slot').create(700, BOTTOM_ROW);
-    },
-
-    _setupCard: function() {
+        var playerBoard = Crafty.e('PlayerBoard');
         var card = Crafty.e('Card');
         card.bind('StopDrag', function() {
-            card.attr(DECK_POSITION);
+            if (playerBoard.canBePlaced(card)) {
+                card.attr(playerBoard.newPosition(card));
+            } else {
+                card.attr(DECK_POSITION);
+            }
         });
     }
 });
@@ -50,6 +48,39 @@ Crafty.c('Card', {
     },
 });
 
+Crafty.c('PlayerBoard', {
+    init: function() {
+        this.slots = [
+            Crafty.e('Slot').create(100, BOTTOM_ROW),
+            Crafty.e('Slot').create(400, BOTTOM_ROW),
+            Crafty.e('Slot').create(700, BOTTOM_ROW)
+        ];
+    },
+
+    canBePlaced: function(card) {
+        for (var i = 0; i < this.slots.length; ++i) {
+            if (this.slots[i].intersect(card)) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    newPosition: function(card) {
+        var slot = this.slots.reduce(function(oldSlot, newSlot) {
+            var oldArea = oldSlot.intersectArea(card);
+            var newArea = newSlot.intersectArea(card);
+            debugger;
+            if (oldArea < newArea) {
+                return newSlot;
+            } else {
+                return oldSlot;
+            }
+        });
+        return {x: slot.x, y: slot.y};
+    }
+});
+
 Crafty.c('Slot', {
     init: function() {
         this.requires('2D, Canvas, Color');
@@ -60,6 +91,12 @@ Crafty.c('Slot', {
     create: function(x, y) {
         this.attr({x: x, y: y});
         return this;
+    },
+
+    intersectArea: function(rect) {
+        if (!this.intersect(rect)) return 0;
+
+        return Math.abs(this.x - rect.x) * Math.abs(this.y - rect.y);
     }
 });
 
