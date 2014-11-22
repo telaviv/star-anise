@@ -1,7 +1,7 @@
 var BOTTOM_ROW = 650;
 var DECK_POSITION = {x: 1100, y: BOTTOM_ROW};
-var BOARD_POSITION = {x: 100, y: BOTTOM_ROW};
-var CARD_DIMENSIONS = {w: 90, h: 60};
+var BOARD_POSITION = {x: 0, y: BOTTOM_ROW};
+var CARD_DIMENSIONS = {w: 150, h: 110};
 var CARD_PADDING = 6;
 
 var startGame = function() {
