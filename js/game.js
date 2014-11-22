@@ -1,5 +1,6 @@
 var BOTTOM_ROW = 600;
 var DECK_POSITION = {x: 1000, y: BOTTOM_ROW};
+var CARD_DIMENSION = 150;
 
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
@@ -42,8 +43,11 @@ Crafty.c('Player Side', {
 
 Crafty.c('Card', {
     init: function() {
-        this.requires('2D, Canvas, Color, Draggable');
-        this.attr({x: DECK_POSITION.x, y: DECK_POSITION.y, w: 180, h: 180, z: 1});
+        this.requires('Rectangle, Canvas, Color, Draggable');
+        this.attr({
+            x: DECK_POSITION.x, y: DECK_POSITION.y,
+            w: CARD_DIMENSION, h: CARD_DIMENSION, z: 1
+        });
         this.color('green');
     },
 });
@@ -70,7 +74,6 @@ Crafty.c('PlayerBoard', {
         var slot = this.slots.reduce(function(oldSlot, newSlot) {
             var oldArea = oldSlot.intersectArea(card);
             var newArea = newSlot.intersectArea(card);
-            debugger;
             if (oldArea < newArea) {
                 return newSlot;
             } else {
@@ -83,8 +86,8 @@ Crafty.c('PlayerBoard', {
 
 Crafty.c('Slot', {
     init: function() {
-        this.requires('2D, Canvas, Color');
-        this.attr({w: 180, h: 180});
+        this.requires('Rectangle, Canvas, Color');
+        this.attr({w: CARD_DIMENSION, h: CARD_DIMENSION});
         this.color('white');
     },
 
@@ -92,13 +95,40 @@ Crafty.c('Slot', {
         this.attr({x: x, y: y});
         return this;
     },
+});
+
+Crafty.c('Rectangle', {
+    init: function() {
+        this.requires('2D');
+    },
+
+    left: function() {
+        return this.x;
+    },
+
+    right: function() {
+        return this.x + this.w;
+    },
+
+    top: function() {
+        return this.y;
+    },
+
+    bottom: function() {
+        return this.y + this.h;
+    },
 
     intersectArea: function(rect) {
-        if (!this.intersect(rect)) return 0;
+        var left = Math.max(this.left(), rect.left());
+        var right = Math.min(this.right(), rect.right());
+        var bottom = Math.min(this.bottom(), rect.bottom());
+        var top = Math.max(this.top(), rect.top());
 
-        return Math.abs(this.x - rect.x) * Math.abs(this.y - rect.y);
+        if (left > right || bottom < top) return 0;
+        return (bottom - top) * (right - left);
     }
 });
+
 
 
 Crafty.sprite(1333, 800, "img/star-anise-sprite.png", {
