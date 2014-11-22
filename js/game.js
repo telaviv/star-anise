@@ -1,6 +1,8 @@
-var BOTTOM_ROW = 600;
-var DECK_POSITION = {x: 1000, y: BOTTOM_ROW};
-var CARD_DIMENSION = 150;
+var BOTTOM_ROW = 650;
+var DECK_POSITION = {x: 1100, y: BOTTOM_ROW};
+var BOARD_POSITION = {x: 100, y: BOTTOM_ROW};
+var CARD_DIMENSIONS = {w: 90, h: 60};
+var CARD_PADDING = 6;
 
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
@@ -46,7 +48,7 @@ Crafty.c('Card', {
         this.requires('Rectangle, Canvas, Color, Draggable');
         this.attr({
             x: DECK_POSITION.x, y: DECK_POSITION.y,
-            w: CARD_DIMENSION, h: CARD_DIMENSION, z: 1
+            w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h, z: 1
         });
         this.color('green');
     },
@@ -54,11 +56,17 @@ Crafty.c('Card', {
 
 Crafty.c('PlayerBoard', {
     init: function() {
-        this.slots = [
-            Crafty.e('Slot').create(100, BOTTOM_ROW),
-            Crafty.e('Slot').create(400, BOTTOM_ROW),
-            Crafty.e('Slot').create(700, BOTTOM_ROW)
-        ];
+        this.slots = [];
+        for (var x = 0; x < 5; ++x) {
+            for (var y = 0; y < 5; ++y) {
+                this.slots.push(
+                    Crafty.e('Slot').create(
+                        BOARD_POSITION.x + x * (CARD_DIMENSIONS.w + CARD_PADDING),
+                        BOARD_POSITION.y - y * (CARD_DIMENSIONS.h + CARD_PADDING)
+                    )
+                );
+            }
+        }
     },
 
     canBePlaced: function(card) {
@@ -87,7 +95,7 @@ Crafty.c('PlayerBoard', {
 Crafty.c('Slot', {
     init: function() {
         this.requires('Rectangle, Canvas, Color');
-        this.attr({w: CARD_DIMENSION, h: CARD_DIMENSION});
+        this.attr({w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h});
         this.color('white');
     },
 
