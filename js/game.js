@@ -62,7 +62,8 @@ Crafty.c('PlayerBoard', {
                 this.slots.push(
                     Crafty.e('Slot').create(
                         BOARD_POSITION.x + x * (CARD_DIMENSIONS.w + CARD_PADDING),
-                        BOARD_POSITION.y - y * (CARD_DIMENSIONS.h + CARD_PADDING)
+                        BOARD_POSITION.y - y * (CARD_DIMENSIONS.h + CARD_PADDING),
+                        x, y
                     )
                 );
             }
@@ -78,8 +79,9 @@ Crafty.c('PlayerBoard', {
         return false;
     },
 
-    newPosition: function(card) {
-        var slot = this.slots.reduce(function(oldSlot, newSlot) {
+    slotMatch: function(card) {
+        // best matching slot
+        return this.slots.reduce(function(oldSlot, newSlot) {
             var oldArea = oldSlot.intersectArea(card);
             var newArea = newSlot.intersectArea(card);
             if (oldArea < newArea) {
@@ -88,6 +90,10 @@ Crafty.c('PlayerBoard', {
                 return oldSlot;
             }
         });
+    },
+
+    newPosition: function(card) {
+        var slot = this.slotMatch(card);
         return {x: slot.x, y: slot.y};
     }
 });
@@ -99,8 +105,8 @@ Crafty.c('Slot', {
         this.color('white');
     },
 
-    create: function(x, y) {
-        this.attr({x: x, y: y});
+    create: function(x, y, boardX, boardY) {
+        this.attr({x: x, y: y, boardX: boardX, boardY: boardY});
         return this;
     },
 });
