@@ -15,7 +15,7 @@ Crafty.scene('StartScene', function() {
 });
 
 Crafty.scene('FightScene', function() {
-    Crafty.e('Player Side');
+    Crafty.e('PlayerBoard');
 });
 
 Crafty.c('StartScreen', {
@@ -26,20 +26,6 @@ Crafty.c('StartScreen', {
         this.animate('BackgroundAnimating', -1);
         this.bind('MouseUp', function() {
             Crafty.scene('FightScene');
-        });
-    }
-});
-
-Crafty.c('Player Side', {
-    init: function() {
-        var playerBoard = Crafty.e('PlayerBoard');
-        var card = Crafty.e('Card');
-        card.bind('StopDrag', function() {
-            if (playerBoard.canBePlaced(card)) {
-                card.attr(playerBoard.newPosition(card));
-            } else {
-                card.attr(DECK_POSITION);
-            }
         });
     }
 });
@@ -58,13 +44,21 @@ Crafty.c('Card', {
 Crafty.c('PlayerBoard', {
     init: function() {
         this.slots = Crafty.e('SlotCollection');
+        var card = Crafty.e('Card');
+        card.bind('StopDrag', function() {
+            if (this._canBePlaced(card)) {
+                card.attr(this._newPosition(card));
+            } else {
+                card.attr(DECK_POSITION);
+            }
+        }.bind(this));
     },
 
-    canBePlaced: function(card) {
+    _canBePlaced: function(card) {
         return this.slots.canBePlaced(card);
     },
 
-    newPosition: function(card) {
+    _newPosition: function(card) {
         return this.slots.newPosition(card);
     }
 });
