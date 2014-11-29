@@ -1,8 +1,9 @@
-var BOTTOM_ROW = 650;
-var DECK_POSITION = {x: 1100, y: BOTTOM_ROW};
-var BOARD_POSITION = {x: 0, y: BOTTOM_ROW};
-var CARD_DIMENSIONS = {w: 150, h: 110};
-var CARD_PADDING = 6;
+var BOTTOM_ROW = 700;
+var SLOT_DIMENSIONS = {w: 150, h: 110};
+var SLOT_PADDING = 6;
+var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
+var BOARD_POSITION = {x: 0, y: BOTTOM_ROW - SLOT_DIMENSIONS.h};
+var DECK_POSITION = {x: 1100, y: BOTTOM_ROW - CARD_DIMENSIONS.h};
 
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
@@ -76,8 +77,8 @@ Crafty.c('SlotCollection', {
             for (var x = 0; x < 5; ++x) {
                 row.push(
                     Crafty.e('Slot').create(
-                        BOARD_POSITION.x + x * (CARD_DIMENSIONS.w + CARD_PADDING),
-                        BOARD_POSITION.y - y * (CARD_DIMENSIONS.h + CARD_PADDING)
+                        BOARD_POSITION.x + x * (SLOT_DIMENSIONS.w + SLOT_PADDING),
+                        BOARD_POSITION.y - y * (SLOT_DIMENSIONS.h + SLOT_PADDING)
                     )
                 );
             }
@@ -128,7 +129,7 @@ Crafty.c('SlotCollection', {
 Crafty.c('Slot', {
     init: function() {
         this.requires('Rectangle, Canvas, Color');
-        this.attr({w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h});
+        this.attr({w: SLOT_DIMENSIONS.w, h: SLOT_DIMENSIONS.h});
         this.color('white');
     },
 
