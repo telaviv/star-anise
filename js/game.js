@@ -60,30 +60,11 @@ Crafty.c('PlayerBoard', {
     },
 
     canBePlaced: function(card) {
-        for (var i = 0; i < this.slots.length; ++i) {
-            if (this.slots[i].intersect(card)) {
-                return true;
-            }
-        }
-        return false;
-    },
-
-    _slotMatch: function(card) {
-        // best matching slot
-        return this.slots.reduce(function(oldSlot, newSlot) {
-            var oldArea = oldSlot.intersectArea(card);
-            var newArea = newSlot.intersectArea(card);
-            if (oldArea < newArea) {
-                return newSlot;
-            } else {
-                return oldSlot;
-            }
-        });
+        return this.slots.canBePlaced(card);
     },
 
     newPosition: function(card) {
-        var slot = this._slotMatch(card);
-        return {x: slot.x, y: slot.y};
+        return this.slots.newPosition(card);
     }
 });
 
@@ -102,6 +83,45 @@ Crafty.c('SlotCollection', {
             }
             this.slots.push(row);
         }
+    },
+
+    canBePlaced: function(card) {
+        for (var x = 0; x < 5; ++x) {
+            for (var y = 0; y < 5; ++y) {
+                if (this.slots[x][y].intersect(card)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+
+    newPosition: function(card) {
+        var slot = this._slotMatch(card);
+        return {x: slot.x, y: slot.y};
+    },
+
+    _slotMatch: function(card) {
+        // best matching slot
+        return this._slotArray().reduce(function(oldSlot, newSlot) {
+            var oldArea = oldSlot.intersectArea(card);
+            var newArea = newSlot.intersectArea(card);
+            if (oldArea < newArea) {
+                return newSlot;
+            } else {
+                return oldSlot;
+            }
+        });
+    },
+
+    _slotArray: function() {
+        var slots = [];
+        for (var x = 0; x < 5; ++x) {
+            for (var y = 0; y < 5; ++y) {
+                slots.push(this.slots[x][y]);
+            }
+        }
+        return slots;
     }
 });
 
