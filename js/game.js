@@ -30,22 +30,11 @@ Crafty.c('StartScreen', {
     }
 });
 
-Crafty.c('Card', {
-    init: function() {
-        this.requires('Rectangle, Canvas, Color, Draggable');
-        this.attr({
-            x: DECK_POSITION.x, y: DECK_POSITION.y,
-            w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h, z: 1
-        });
-        this.color('green');
-    },
-});
-
 Crafty.c('PlayerBoard', {
     init: function() {
         this.slots = Crafty.e('SlotCollection');
-        var card = Crafty.e('Card');
-        card.bind('StopDrag', function() {
+        var deck = Crafty.e('Deck');
+        deck.bind('CardPlaced', function(card) {
             if (this._canBePlaced(card)) {
                 card.attr(this._newPosition(card));
             } else {
@@ -62,6 +51,28 @@ Crafty.c('PlayerBoard', {
         return this.slots.newPosition(card);
     }
 });
+
+
+Crafty.c('Deck', {
+    init: function() {
+        var card = Crafty.e('Card');
+        card.bind('StopDrag', function() {
+            this.trigger('CardPlaced', card);
+        }.bind(this));
+   }
+});
+
+Crafty.c('Card', {
+    init: function() {
+        this.requires('Rectangle, Canvas, Color, Draggable');
+        this.attr({
+            x: DECK_POSITION.x, y: DECK_POSITION.y,
+            w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h, z: 1
+        });
+        this.color('green');
+    }
+});
+
 
 Crafty.c('SlotCollection', {
     init: function() {
@@ -164,8 +175,6 @@ Crafty.c('Rectangle', {
         return (bottom - top) * (right - left);
     }
 });
-
-
 
 Crafty.sprite(1333, 800, "img/star-anise-sprite.png", {
     BackgroundSprite: [0,0]
