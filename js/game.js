@@ -35,12 +35,19 @@ Crafty.c('PlayerBoard', {
     init: function() {
         var slots = Crafty.e('SlotCollection');
         var deck = Crafty.e('Deck');
+
         deck.bind('CardPlaced', function(card) {
             if (slots.canBePlaced(card)) {
                 slots.placeCard(card);
                 deck.removeTopCard();
             } else {
                 card.attr(DECK_POSITION);
+            }
+        });
+
+        deck.bind('CardMoving', function(card) {
+            if (slots.canBePlaced(card)) {
+                slots.highlightLocation(card);
             }
         });
     },
@@ -125,6 +132,11 @@ Crafty.c('SlotCollection', {
         slot.setPlayerCard(card);
     },
 
+    highlightLocation: function(card) {
+        var slot = this._slotMatch(card);
+        slot.highlight(card);
+    },
+
     _slotMatch: function(card) {
         // picks the lowest row that a card can be placed
         var slotIndex = this._bestMatchingSlotIndex(card);
@@ -171,6 +183,10 @@ Crafty.c('CardSlot', {
     setPlayerCard: function(card) {
         this.card = card.model;
         this.color('green');
+    },
+
+    highlight: function(card) {
+        this.color('red');
     },
 
     hasCard: function() {
