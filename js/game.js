@@ -4,6 +4,7 @@ var SLOT_PADDING = 6;
 var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
 var BOARD_POSITION = {x: 0, y: BOTTOM_ROW - SLOT_DIMENSIONS.h};
 var DECK_POSITION = {x: 1100, y: BOTTOM_ROW - CARD_DIMENSIONS.h};
+var GRID_DIMENSIONS = {columns: 5, rows: 5};
 
 var startGame = function() {
     Crafty.init(1333, 800, "crafty-star-anise");
@@ -97,9 +98,9 @@ Crafty.c('CardModel', {
 Crafty.c('SlotCollection', {
     init: function() {
         this.slots = [];
-        for (var x = 0; x < 5; ++x) {
+        for (var x = 0; x < GRID_DIMENSIONS.columns; ++x) {
             var column = [];
-            for (var y = 0; y < 5; ++y) {
+            for (var y = 0; y < GRID_DIMENSIONS.rows; ++y) {
                 column.push(
                     Crafty.e('CardSlot').create(
                         BOARD_POSITION.x + x * (SLOT_DIMENSIONS.w + SLOT_PADDING),
@@ -112,14 +113,11 @@ Crafty.c('SlotCollection', {
     },
 
     canBePlaced: function(card) {
-        for (var x = 0; x < 5; ++x) {
-            for (var y = 0; y < 5; ++y) {
-                if (this.slots[x][y].intersect(card)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        var matchIndex = this._bestMatchingSlotIndex(card);
+        var slot = this._slotMatch(card);
+        return !(this.slots[matchIndex.x][matchIndex.y].intersectArea(card) === 0||
+                 slot === null);
+
     },
 
     placeCard: function(card) {
@@ -130,14 +128,23 @@ Crafty.c('SlotCollection', {
     _slotMatch: function(card) {
         // picks the lowest row that a card can be placed
         var slotIndex = this._bestMatchingSlotIndex(card);
-        return this.slots[slotIndex.x][0];
+        return this._lowestAvailableSlot(slotIndex.x);
+    },
+
+    _lowestAvailableSlot: function(column) {
+        for (var row = 0; row < GRID_DIMENSIONS.rows; ++row) {
+            if (!this.slots[column][row].hasCard()) {
+                return this.slots[column][row];
+            }
+        }
+        return null;
     },
 
     _bestMatchingSlotIndex: function(card) {
         var highestArea = -1;
         var bestIndex;
-        for (var x = 0; x < 5; ++x) {
-            for (var y = 0; y < 5; ++y) {
+        for (var x = 0; x < GRID_DIMENSIONS.columns; ++x) {
+            for (var y = 0; y < GRID_DIMENSIONS.rows; ++y) {
                 var newArea = this.slots[x][y].intersectArea(card);
                 if (newArea > highestArea) {
                     highestArea = newArea;
@@ -162,7 +169,12 @@ Crafty.c('CardSlot', {
     },
 
     setPlayerCard: function(card) {
+        this.card = card.model;
         this.color('green');
+    },
+
+    hasCard: function() {
+        return !!this.card;
     }
 });
 
