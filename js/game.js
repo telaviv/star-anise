@@ -48,19 +48,26 @@ Crafty.c('PlayerBoard', {
 
 Crafty.c('Deck', {
     init: function() {
-        this.card = Crafty.e('FullCard');
+        this.cards = [];
+        for (var i = 0; i < 5; ++i) {
+            // the z value needs to start from 1 to be over everything else.
+            this.cards.push(Crafty.e('FullCard').create(6 - i));
+        }
 
-        this.card.bind('StopDrag', function() {
-            this.trigger('CardPlaced', this.card);
-        }.bind(this));
+        this.cards.map(function(card) {
+            card.bind('StopDrag', function() {
+                this.trigger('CardPlaced', card);
+            }.bind(this));
 
-        this.card.bind('Dragging', function() {
-            this.trigger('CardMoving', this.card);
-        }.bind(this));
+            card.bind('Dragging', function() {
+                this.trigger('CardMoving', card);
+            }.bind(this));
+        }, this);
    },
 
     removeTopCard: function() {
-        this.card.destroy();
+        var topCard = this.cards.shift();
+        topCard.destroy();
     }
 });
 
@@ -69,10 +76,15 @@ Crafty.c('FullCard', {
         this.requires('Rectangle, Canvas, Color, Draggable');
         this.attr({
             x: DECK_POSITION.x, y: DECK_POSITION.y,
-            w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h, z: 1
+            w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h,
         });
         this.color('green');
         this.model = Crafty.e('CardModel');
+    },
+
+    create: function(z) {
+        this.attr({z: z});
+        return this;
     }
 });
 
