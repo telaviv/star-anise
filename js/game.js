@@ -37,6 +37,7 @@ Crafty.c('PlayerBoard', {
         deck.bind('CardPlaced', function(card) {
             if (this._canBePlaced(card)) {
                 card.attr(this._newPosition(card));
+                deck.popCard();
             } else {
                 card.attr(DECK_POSITION);
             }
@@ -55,17 +56,20 @@ Crafty.c('PlayerBoard', {
 
 Crafty.c('Deck', {
     init: function() {
-        var card = Crafty.e('Card');
+        this.card = Crafty.e('Card');
 
-        card.bind('StopDrag', function() {
-            this.trigger('CardPlaced', card);
+        this.card.bind('StopDrag', function() {
+            this.trigger('CardPlaced', this.card);
         }.bind(this));
 
-        card.bind('Dragging', function() {
-            this.trigger('CardMoving', card);
+        this.card.bind('Dragging', function() {
+            this.trigger('CardMoving', this.card);
         }.bind(this));
+   },
 
-   }
+    popCard: function() {
+        this.card.destroy();
+    }
 });
 
 Crafty.c('Card', {
