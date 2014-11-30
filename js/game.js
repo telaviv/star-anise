@@ -32,31 +32,23 @@ Crafty.c('StartScreen', {
 
 Crafty.c('PlayerBoard', {
     init: function() {
-        this.slots = Crafty.e('SlotCollection');
+        var slots = Crafty.e('SlotCollection');
         var deck = Crafty.e('Deck');
         deck.bind('CardPlaced', function(card) {
-            if (this._canBePlaced(card)) {
-                card.attr(this._newPosition(card));
-                deck.popCard();
+            if (slots.canBePlaced(card)) {
+                slots.placeCard(card);
+                deck.removeTopCard();
             } else {
                 card.attr(DECK_POSITION);
             }
-        }.bind(this));
+        });
     },
-
-    _canBePlaced: function(card) {
-        return this.slots.canBePlaced(card);
-    },
-
-    _newPosition: function(card) {
-        return this.slots.newPosition(card);
-    }
 });
 
 
 Crafty.c('Deck', {
     init: function() {
-        this.card = Crafty.e('Card');
+        this.card = Crafty.e('FullCard');
 
         this.card.bind('StopDrag', function() {
             this.trigger('CardPlaced', this.card);
@@ -67,12 +59,12 @@ Crafty.c('Deck', {
         }.bind(this));
    },
 
-    popCard: function() {
+    removeTopCard: function() {
         this.card.destroy();
     }
 });
 
-Crafty.c('Card', {
+Crafty.c('FullCard', {
     init: function() {
         this.requires('Rectangle, Canvas, Color, Draggable');
         this.attr({
@@ -80,9 +72,15 @@ Crafty.c('Card', {
             w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h, z: 1
         });
         this.color('green');
+        this.model = Crafty.e('CardModel');
     }
 });
 
+Crafty.c('CardModel', {
+    init: function() {
+        this.name = 'StoneTerra';
+    }
+});
 
 Crafty.c('SlotCollection', {
     init: function() {
@@ -91,7 +89,7 @@ Crafty.c('SlotCollection', {
             var column = [];
             for (var y = 0; y < 5; ++y) {
                 column.push(
-                    Crafty.e('Slot').create(
+                    Crafty.e('CardSlot').create(
                         BOARD_POSITION.x + x * (SLOT_DIMENSIONS.w + SLOT_PADDING),
                         BOARD_POSITION.y - y * (SLOT_DIMENSIONS.h + SLOT_PADDING)
                     )
@@ -112,9 +110,9 @@ Crafty.c('SlotCollection', {
         return false;
     },
 
-    newPosition: function(card) {
+    placeCard: function(card) {
         var slot = this._slotMatch(card);
-        return {x: slot.x, y: slot.y};
+        slot.setPlayerCard(card);
     },
 
     _slotMatch: function(card) {
@@ -139,7 +137,7 @@ Crafty.c('SlotCollection', {
     },
 });
 
-Crafty.c('Slot', {
+Crafty.c('CardSlot', {
     init: function() {
         this.requires('Rectangle, Canvas, Color');
         this.attr({w: SLOT_DIMENSIONS.w, h: SLOT_DIMENSIONS.h});
@@ -150,6 +148,10 @@ Crafty.c('Slot', {
         this.attr({x: x, y: y});
         return this;
     },
+
+    setPlayerCard: function(card) {
+        this.color('green');
+    }
 });
 
 Crafty.c('Rectangle', {
