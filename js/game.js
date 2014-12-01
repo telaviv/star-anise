@@ -1,4 +1,5 @@
 var BOTTOM_ROW = 700;
+var CARD_COUNT = 8;
 var SLOT_DIMENSIONS = {w: 150, h: 110};
 var SLOT_PADDING = 6;
 var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
@@ -37,16 +38,17 @@ Crafty.c('PlayerBoard', {
         var deck = Crafty.e('Deck');
 
         deck.bind('CardPlaced', function(card) {
+            slots.unhighlight();
             if (slots.canBePlaced(card)) {
                 slots.placeCard(card);
                 deck.removeTopCard();
             } else {
                 card.attr(DECK_POSITION);
-                slots.unhighlight();
             }
         });
 
         deck.bind('CardMoving', function(card) {
+            slots.unhighlight();
             if (slots.canBePlaced(card)) {
                 slots.highlightLocation(card);
             }
@@ -56,11 +58,12 @@ Crafty.c('PlayerBoard', {
 
 
 Crafty.c('Deck', {
+
     init: function() {
         this.cards = [];
-        for (var i = 0; i < 5; ++i) {
+        for (var i = 0; i < CARD_COUNT ; ++i) {
             // the z value needs to start from 1 to be over everything else.
-            this.cards.push(Crafty.e('FullCard').create(6 - i));
+            this.cards.push(Crafty.e('FullCard').create(CARD_COUNT + 1 - i));
         }
 
         this.cards.map(function(card) {
@@ -78,6 +81,7 @@ Crafty.c('Deck', {
         var topCard = this.cards.shift();
         topCard.destroy();
     }
+
 });
 
 Crafty.c('FullCard', {
@@ -135,7 +139,6 @@ Crafty.c('SlotCollection', {
 
     highlightLocation: function(card) {
         var slot = this._slotMatch(card);
-        this.unhighlight();
         slot.highlight(card);
     },
 
