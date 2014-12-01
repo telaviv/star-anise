@@ -42,6 +42,7 @@ Crafty.c('PlayerBoard', {
                 deck.removeTopCard();
             } else {
                 card.attr(DECK_POSITION);
+                slots.unhighlight();
             }
         });
 
@@ -134,7 +135,16 @@ Crafty.c('SlotCollection', {
 
     highlightLocation: function(card) {
         var slot = this._slotMatch(card);
+        this.unhighlight();
         slot.highlight(card);
+    },
+
+    unhighlight: function(card) {
+        for (var x = 0; x < GRID_DIMENSIONS.columns; ++x) {
+            for (var y = 0; y < GRID_DIMENSIONS.rows; ++y) {
+                this.slots[x][y].unhighlight();
+            }
+        }
     },
 
     _slotMatch: function(card) {
@@ -187,6 +197,12 @@ Crafty.c('CardSlot', {
 
     highlight: function(card) {
         this.color('red');
+    },
+
+    unhighlight: function(card) {
+        if (!this.hasCard()) {
+            this.color('white');
+        }
     },
 
     hasCard: function() {
