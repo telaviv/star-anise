@@ -1,5 +1,5 @@
 var BOTTOM_ROW = 700;
-var CARD_COUNT = 8;
+var CARD_COUNT = 1;
 var SLOT_DIMENSIONS = {w: 150, h: 110};
 var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
 var BOARD_POSITION = {x: 0, y: BOTTOM_ROW - SLOT_DIMENSIONS.h};
@@ -85,7 +85,7 @@ Crafty.c('Deck', {
 
 Crafty.c('FullCard', {
     init: function() {
-        this.requires('Rectangle, Canvas, Color, Draggable, StoneTerraSprite');
+        this.requires('Rectangle, 2D, Canvas, Color, Draggable, StoneTerraSprite');
         this.attr({
             x: DECK_POSITION.x, y: DECK_POSITION.y,
             w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h,
@@ -96,6 +96,13 @@ Crafty.c('FullCard', {
 
     create: function(z) {
         this.attr({z: z});
+        var healthText = Crafty.e('2D, Canvas, Text')
+            .attr({x: this.x + 5, y: this.y + 3, z: z + 10})
+            .text('3')
+            .textColor('white')
+            .textFont({size: '10px'})
+            .unselectable();
+        this.attach(healthText);
         return this;
     }
 });
@@ -103,6 +110,10 @@ Crafty.c('FullCard', {
 Crafty.c('CardModel', {
     init: function() {
         this.name = 'StoneTerra';
+    },
+
+    health: function() {
+        return 3;
     }
 });
 
