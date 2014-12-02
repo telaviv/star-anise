@@ -1,7 +1,6 @@
 var BOTTOM_ROW = 700;
 var CARD_COUNT = 8;
 var SLOT_DIMENSIONS = {w: 150, h: 110};
-var SLOT_PADDING = 6;
 var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
 var BOARD_POSITION = {x: 0, y: BOTTOM_ROW - SLOT_DIMENSIONS.h};
 var DECK_POSITION = {x: 1100, y: BOTTOM_ROW - CARD_DIMENSIONS.h};
@@ -86,7 +85,7 @@ Crafty.c('Deck', {
 
 Crafty.c('FullCard', {
     init: function() {
-        this.requires('Rectangle, Canvas, Color, Draggable');
+        this.requires('Rectangle, Canvas, Color, Draggable, StoneTerraSprite');
         this.attr({
             x: DECK_POSITION.x, y: DECK_POSITION.y,
             w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h,
@@ -115,8 +114,8 @@ Crafty.c('SlotCollection', {
             for (var y = 0; y < GRID_DIMENSIONS.rows; ++y) {
                 column.push(
                     Crafty.e('CardSlot').create(
-                        BOARD_POSITION.x + x * (SLOT_DIMENSIONS.w + SLOT_PADDING),
-                        BOARD_POSITION.y - y * (SLOT_DIMENSIONS.h + SLOT_PADDING)
+                        BOARD_POSITION.x + x * (SLOT_DIMENSIONS.w),
+                        BOARD_POSITION.y - y * (SLOT_DIMENSIONS.h)
                     )
                 );
             }
@@ -247,4 +246,8 @@ Crafty.c('Rectangle', {
 
 Crafty.sprite(1333, 800, "img/star-anise-sprite.png", {
     BackgroundSprite: [0,0]
+});
+
+Crafty.sprite(150, 200, "img/stone-terra.png", {
+    StoneTerraSprite: [0,0]
 });
