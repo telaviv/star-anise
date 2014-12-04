@@ -1,5 +1,5 @@
 var BOTTOM_ROW = 700;
-var CARD_COUNT = 1;
+var CARD_COUNT = 8;
 var SLOT_DIMENSIONS = {w: 150, h: 110};
 var CARD_DIMENSIONS = {w: SLOT_DIMENSIONS.w, h: 200};
 var BOARD_POSITION = {x: 0, y: BOTTOM_ROW - SLOT_DIMENSIONS.h};
@@ -62,7 +62,7 @@ Crafty.c('Deck', {
         this.cards = [];
         for (var i = 0; i < CARD_COUNT ; ++i) {
             // the z value needs to start from 1 to be over everything else.
-            this.cards.push(Crafty.e('FullCard').create(CARD_COUNT + 1 - i));
+            this.cards.push(Crafty.e('StoneTerraCard').create(CARD_COUNT + 1 - i));
         }
 
         this.cards.map(function(card) {
@@ -83,21 +83,20 @@ Crafty.c('Deck', {
 
 });
 
-Crafty.c('FullCard', {
+Crafty.c('FullCardView', {
     init: function() {
-        this.requires('Rectangle, 2D, Canvas, Color, Draggable, StoneTerraSprite');
+        this.requires('Rectangle, 2D, Canvas, Color, Draggable');
         this.attr({
             x: DECK_POSITION.x, y: DECK_POSITION.y,
             w: CARD_DIMENSIONS.w, h: CARD_DIMENSIONS.h,
         });
-        this.color('green');
         this.model = Crafty.e('CardModel');
     },
 
     create: function(z) {
         this.attr({z: z});
         var healthText = Crafty.e('2D, Canvas, Text')
-            .attr({x: this.x + 5, y: this.y + 3, z: z + 10})
+            .attr({x: this.x + 5, y: this.y + 3, z: z})
             .text('3')
             .textColor('white')
             .textFont({size: '10px'})
@@ -107,7 +106,14 @@ Crafty.c('FullCard', {
     }
 });
 
-Crafty.c('CardModel', {
+Crafty.c('StoneTerraCard', {
+    init: function() {
+        this.requires('FullCardView, StoneTerraSprite');
+        this.model = Crafty.e('StoneTerraModel');
+    }
+});
+
+Crafty.c('StoneTerraModel', {
     init: function() {
         this.name = 'StoneTerra';
     },
